@@ -1,21 +1,28 @@
 import React,  { useState, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import PhoneInput from 'react-phone-input-2';
 import { useDispatch } from 'react-redux';
-import 'react-phone-input-2/lib/style.css';
+import PhoneInput from 'react-phone-input-2';
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
+import { toast } from 'react-toastify';
+import { confirmAlert } from 'react-confirm-alert';
+
+import 'react-toastify/dist/ReactToastify.css';
+import 'react-phone-input-2/lib/style.css';
+import 'react-confirm-alert/src/react-confirm-alert.css';
 
 import { initializeFormData, saveFormData } from '../store/actions';
 import FormField from './FormField';
 import { FormValues } from '../data/types';
 
-const maxBirthDate = new Date().toISOString().split('T')[0];
+const today = new Date();
+const maxBirthDate = today.toISOString().split('T')[0];
+const minBirthDate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDate()).toISOString().split('T')[0];
 
 const Form: React.FC = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const { register, handleSubmit, formState: { errors }, setValue, reset } = useForm<FormValues>();
+  const { register, handleSubmit, formState: { errors }, setValue, reset } = useForm<FormValues>({ mode: 'onTouched' });
   const [phone, setPhone] = useState('');
 
   useEffect(() => {
@@ -28,14 +35,39 @@ const Form: React.FC = () => {
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     dispatch(saveFormData(data));
-    console.log('Form data saved:', data);
+    toast.success(t('form_messages.saved'), {
+      position: 'bottom-left',
+    });
   };
 
-  const handleClearLocalStorage = () => {
+  const clearLocalStorage = () => {
     localStorage.removeItem('formData');
     dispatch(initializeFormData({} as FormValues));
     setPhone('');
+    reset();
   };
+
+  const handleClearLocalStorage = () => {
+    confirmAlert({
+      title: t('confirm.title'),
+      message: t('confirm.message'),
+      buttons: [
+        {
+          label: t('confirm.yes'),
+          onClick: () => {
+            clearLocalStorage();
+            toast.success(t('form_messages.cleared'), {
+              position: 'bottom-left',
+            });
+          }
+        },
+        {
+          label: t('confirm.no'),
+        }
+      ]
+    });
+  };
+
 
   const handlePhoneChange = (value: string) => {
     setPhone(value);
@@ -48,13 +80,13 @@ const Form: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="mx-auto grid grid-cols-2 gap-4 bg-white p-10 rounded-2xl">
-      <h2 className="text-2xl font-bold mb-4 text-blue-500">{t('form_title')}</h2>
+    <form onSubmit={handleSubmit(onSubmit)} className="mx-auto grid grid-cols-2 gap-y-8 gap-x-4 bg-white p-10 rounded-2xl">
+      <h2 className="text-2xl col-span-2 font-bold mb-4 text-blue-500">{t('form_title')}</h2>
 
       {/* Civility */}
       <div className="col-span-2">
         <label className="block mb-2 uppercase">{t('form_fields.civility')}</label>
-        <div className="mb-2 grid grid-cols-2 px-4 border border-gray-300 rounded">
+        <div className="grid grid-cols-2 px-4 border border-gray-300 rounded">
           <div className="flex items-center py-2">
             <input
               type="radio"
@@ -83,6 +115,7 @@ const Form: React.FC = () => {
       <FormField
         id="name"
         label={t('form_fields.name')}
+        placeholder={t('form_fields.name')}
         register={register('name', { required: true })}
         error={errors.name && (errors.name.message || t('form_errors.required'))}
       />
@@ -90,6 +123,7 @@ const Form: React.FC = () => {
       <FormField
         id="surname"
         label={t('form_fields.surname')}
+        placeholder={t('form_fields.surname')}
         register={register('surname', { required: true })}
         error={errors.surname && (errors.surname.message || t('form_errors.required'))}
       />
@@ -99,6 +133,7 @@ const Form: React.FC = () => {
         id="email"
         label={t('form_fields.email')}
         type="email"
+        placeholder={t('form_fields.email_placeholder')}
         register={register('email', {
           required: true,
           pattern: {
@@ -113,17 +148,19 @@ const Form: React.FC = () => {
         label={t('form_fields.birthday')}
         type="date"
         max={maxBirthDate}
+        min={minBirthDate}
         register={register('birthday', { required: true })}
         error={errors.birthday && (errors.birthday.message || t('form_errors.required'))}
       />
 
       {/* Postal Code and Phone Fields */}
       <FormField
-          id="postalCode"
-          label={t('form_fields.postalCode')}
-          register={register('postalCode', { required: true })}
-          error={errors.postalCode && (errors.postalCode.message || t('form_errors.required'))}
-        />
+        id="postalCode"
+        label={t('form_fields.postalCode')}
+        placeholder={t('form_fields.postalCode_placeholder')}
+        register={register('postalCode', { required: true })}
+        error={errors.postalCode && (errors.postalCode.message || t('form_errors.required'))}
+      />
       <div>
         <label htmlFor="phone" className="block mb-2 uppercase">{t('form_fields.phone')}</label>
         <PhoneInput

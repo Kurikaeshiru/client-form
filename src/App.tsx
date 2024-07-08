@@ -1,23 +1,14 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { useForm, SubmitHandler } from 'react-hook-form';
 import Form from './components/Form';
+import { ToastContainer } from 'react-toastify';
 
 import store from './store';
 import './translation/i18n';
 
-type FormValues = {
-  name: string;
-  surname: string;
-  phone: string;
-  email: string;
-};
-
 const App: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const { register, handleSubmit, formState: { errors } } = useForm<FormValues>();
-  const onSubmit: SubmitHandler<FormValues> = data => console.log(data);
 
   return (
     <Provider store={store}>
@@ -27,6 +18,7 @@ const App: React.FC = () => {
           <button onClick={() => i18n.changeLanguage('fr')}>{t('french')}</button>
         </div>
         <Form />
+        <ToastContainer />
       </div>
     </Provider>
   );

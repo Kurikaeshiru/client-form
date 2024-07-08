@@ -1,20 +1,16 @@
 import React from 'react';
+import { UseFormRegisterReturn } from 'react-hook-form';
 
-type FormFieldProps = {
+type FormFieldProps = React.InputHTMLAttributes<HTMLInputElement> & {
   id: string;
   label: string;
-  type?: string;
-  register: any;
+  register: UseFormRegisterReturn;
   error?: string | boolean;
-  max?: string | Date;
 };
 
 const FormField: React.FC<FormFieldProps> = ({ id, label, type = 'text', register, error, ...rest }) => {
-  const today = new Date();
-  // const minDate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDate());
-
   return (
-    <div className="mb-4">
+    <div>
       <label htmlFor={id} className="block mb-2 uppercase">{label}</label>
       <input
         className="w-full py-2 px-4 border border-gray-300 rounded"
