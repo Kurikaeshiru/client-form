@@ -128,7 +128,26 @@ const Form: React.FC = () => {
         error={errors.surname && (errors.surname.message || t('form_errors.required'))}
       />
 
-      {/* Email and Birthday Fields */}
+      {/* Birthday and Postal Code Fields */}
+      <FormField
+        id="birthday"
+        label={t('form_fields.birthday')}
+        type="date"
+        max={maxBirthDate}
+        min={minBirthDate}
+        register={register('birthday', { required: true })}
+        error={errors.birthday && (errors.birthday.message || t('form_errors.required'))}
+      />
+
+      {/* Email and Phone Fields */}
+      <FormField
+        id="postalCode"
+        label={t('form_fields.postalCode')}
+        placeholder={t('form_fields.postalCode_placeholder')}
+        register={register('postalCode', { required: true })}
+        error={errors.postalCode && (errors.postalCode.message || t('form_errors.required'))}
+      />
+
       <FormField
         id="email"
         label={t('form_fields.email')}
@@ -143,24 +162,7 @@ const Form: React.FC = () => {
         })}
         error={errors.email && (errors.email.message || t('form_errors.required'))}
       />
-      <FormField
-        id="birthday"
-        label={t('form_fields.birthday')}
-        type="date"
-        max={maxBirthDate}
-        min={minBirthDate}
-        register={register('birthday', { required: true })}
-        error={errors.birthday && (errors.birthday.message || t('form_errors.required'))}
-      />
 
-      {/* Postal Code and Phone Fields */}
-      <FormField
-        id="postalCode"
-        label={t('form_fields.postalCode')}
-        placeholder={t('form_fields.postalCode_placeholder')}
-        register={register('postalCode', { required: true })}
-        error={errors.postalCode && (errors.postalCode.message || t('form_errors.required'))}
-      />
       <div>
         <label htmlFor="phone" className="block mb-2 uppercase">{t('form_fields.phone')}</label>
         <PhoneInput
