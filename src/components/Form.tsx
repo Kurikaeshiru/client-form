@@ -171,6 +171,7 @@ const Form: React.FC = () => {
           country={'fr'}
           value={phone}
           inputProps={{
+            id: 'phone',
             required: true,
             autoFocus: true,
             ...register('phone', { validate: validatePhoneNumber }),
@@ -178,7 +179,7 @@ const Form: React.FC = () => {
           }}
           onChange={handlePhoneChange}
         />
-        {errors.phone && <p className="text-red-500 mt-1">{t('form_errors.required')}</p>}
+        {errors.phone && <p className="text-red-500 mt-1">{errors.phone.message || t('form_errors.required')}</p>}
       </div>
 
       {/* Buttons */}
